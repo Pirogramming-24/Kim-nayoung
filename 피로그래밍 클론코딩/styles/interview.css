@@ -1,7 +1,7 @@
 .interview-content {
     max-width: 1000px;
     margin: 0 auto;
-    padding: 10px 20px;
+    padding: 10px 0px;
     min-height: 80vh;
 }
 
@@ -41,11 +41,11 @@
 .interview-card {
     background-color: #333333;
     border-radius: 12px;
-    padding: 24px;
+    padding: 20px;
     
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
     
     transition: transform 0.3s ease, background-color 0.3s ease;
     cursor: pointer;
