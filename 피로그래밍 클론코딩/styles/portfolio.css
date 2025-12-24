@@ -1,0 +1,222 @@
+.portfolio-content {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    min-height: 80vh;
+}
+
+/* 기수 헤더 */
+.batch-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.header-side {
+    flex: 1;
+    display: flex;
+}
+
+.header-side.right {
+    justify-content: flex-end;
+}
+
+.batch-title {
+    font-size: 24px;
+    font-weight: 400;
+    color: var(--text-white);
+}
+
+.prev-batch-link {
+    font-size: 18px;
+    color: var(--text-white);
+}
+
+/* 프로젝트 카드 리스트 */
+.project-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* 카드 간격 */
+}
+
+/* 개별 카드 */
+.project-card {
+    background-color: #333333;
+    border-radius: 12px;
+    padding: 18px;
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    transition: transform 0.3s ease, background-color 0.3s ease;
+}
+
+.project-card:hover {
+    transform: translateY(-4px);
+}
+
+.card-thumbnail {
+    width: 160px;
+    height: 120px;
+    background-color: #fff;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.card-thumbnail img {
+    max-width: 80%;
+    max-height: 80%;
+    object-fit: contain;
+    transition: transform 0.3s ease;
+}
+
+.card-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.project-card:hover .card-thumbnail img {
+    transform: scale(1.1);
+}
+
+.info-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2px;
+}
+
+.project-title {
+    font-size: 25px;
+    font-weight: 400;
+    color: var(--text-white);
+}
+
+.menu-icon {
+    width: 20px;
+    height: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+}
+
+/* 햄버거 막대기 3개 */
+.menu-icon span {
+    display: block;
+    height: 2px;
+    background-color: #888888;
+    border-radius: 2px;
+    transition: width 0.3s ease; 
+}
+
+/* 모든 막대기 꽉 채우기 */
+.menu-icon span:nth-child(1) { width: 100%; }
+.menu-icon span:nth-child(2) { width: 100%; }
+.menu-icon span:nth-child(3) { width: 100%; }
+
+
+/* 호버 마우스 올리면 길이 변경 */
+.project-card:hover .menu-icon span:nth-child(1) {
+    width: 10px; 
+    align-self: flex-start; 
+}
+
+.project-card:hover .menu-icon span:nth-child(2) {
+    width: 20px;
+    align-self: center;
+}
+
+.project-card:hover .menu-icon span:nth-child(3) {
+    width: 10px;
+    align-self: flex-end;
+}
+
+.project-desc {
+    font-size: 17px;
+    color: #cccccc;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.member-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    font-size: 15px;
+    padding: 3px 7px;
+    border-radius: 5px;
+    color: black;
+    background-color: #888888;
+}
+
+.tag.leader {
+    background-color: #2D9CDB;
+    color: #fff;
+}
+
+@media screen and (max-width: 650px) {
+    .project-card {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        gap: 20px;
+    }
+
+    .project-card .menu-icon {
+        position: absolute;
+        top: 24px;
+        right: 24px;
+    }
+
+    .card-thumbnail {
+        width: 40%;
+        height: auto;
+        aspect-ratio: 4 / 3;
+    }
+
+    .card-info {
+        width: 100%;
+        align-items: center;
+    }
+
+    .info-header {
+        justify-content: center;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+    
+    .project-title {
+        font-size: 24px;
+    }
+
+    .project-desc {
+        font-size: 17px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    
+    .member-tags {
+        gap: 5px;
+    }
+    
+    .tag {
+        font-size: 14px;
+        padding: 4px 8px;
+    }
+}
