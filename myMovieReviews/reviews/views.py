@@ -4,16 +4,34 @@ from .models import Review
 
 # Create your views here.
 def review_list(request):
-    # 1. DB에서 모든 리뷰 데이터를 가져온다.
-    reviews = Review.objects.all()
+    # 1. URL에서 정렬 기준(sort)을 가져온다. 없으면 기본값은 '최신순'으로 한다.
+    sort = request.GET.get('sort', 'recent') 
     
-    # 2. 가져온 데이터를 딕셔너리 형태로 포장한다.
+    # 2. 정렬 기준에 따라 데이터를 다르게 가져온다.
+    if sort == 'rating':
+        # 별점 높은 순 (-를 붙이면 내림차순)
+        reviews = Review.objects.all().order_by('-rating')
+    elif sort == 'running_time':
+        # 러닝타임 짧은 순 (오름차순)
+        reviews = Review.objects.all().order_by('running_time')
+    else:
+        # 기본: 최신순 (pk 역순 or created_at 역순)
+        reviews = Review.objects.all().order_by('-pk')
+    
     context = {
         'reviews': reviews
     }
-    
-    # 3. HTML 파일(템플릿)과 데이터를 합쳐서 보내준다.
     return render(request, 'reviews/review_list.html', context)
+    # # 1. DB에서 모든 리뷰 데이터를 가져온다.
+    # reviews = Review.objects.all()
+    
+    # # 2. 가져온 데이터를 딕셔너리 형태로 포장한다.
+    # context = {
+    #     'reviews': reviews
+    # }
+    
+    # # 3. HTML 파일(템플릿)과 데이터를 합쳐서 보내준다.
+    # return render(request, 'reviews/review_list.html', context)
 
 def review_detail(request, pk):
     # pk에 해당하는 리뷰를 찾고, 없으면 404 에러를 띄웁니다 (안전장치)

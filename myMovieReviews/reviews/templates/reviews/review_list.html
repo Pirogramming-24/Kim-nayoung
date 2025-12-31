@@ -6,6 +6,13 @@
 </head>
 <body>
     <h1>🎬 나만의 영화 기록장</h1>
+    <div class="sort-buttons">
+        <a href="?sort=recent">최신순</a> | 
+        <a href="?sort=rating">별점순</a> | 
+        <a href="?sort=running_time">러닝타임순</a>
+    </div>
+
+    <hr>
     <a href="{% url 'reviews:review_create' %}">[리뷰 작성하기]</a> <hr>
     
     <div class="review-container">
