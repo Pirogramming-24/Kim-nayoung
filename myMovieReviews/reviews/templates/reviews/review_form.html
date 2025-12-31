@@ -1,25 +1,35 @@
-<!DOCTYPE html>
+{% load static %} <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>리뷰 작성</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    {% if review %}
-        <h1>✍️ 리뷰 수정하기</h1>
-    {% else %}
-        <h1>✍️ 새 리뷰 작성</h1>
-    {% endif %}
-    
-    <form action="" method="POST">
-        {% csrf_token %}
-        
-        <table>
+    <header class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'reviews:review_list' %}" class="logo">
+                🍿 My Movie Reviews
+            </a>
+        </div>
+    </header>
+
+    <div class="container">
+        {% if review %}
+            <h1>✍️ 리뷰 수정하기</h1>
+        {% else %}
+            <h1>✍️ 새 리뷰 작성</h1>
+        {% endif %}
+
+        <form action="" method="POST">
+            {% csrf_token %}
             {{ form.as_p }}
-        </table>
-        
-        <button type="submit">저장하기</button>
-        <a href="{% url 'reviews:review_list' %}">[취소]</a>
-    </form>
+            
+            <div style="margin-top: 20px; text-align: center;">
+                <button type="submit" class="btn">저장하기</button>
+                <a href="{% url 'reviews:review_list' %}" class="btn btn-secondary">취소</a>
+            </div>
+        </form>
+    </div>
 </body>
 </html>

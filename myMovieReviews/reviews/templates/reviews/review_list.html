@@ -1,31 +1,41 @@
-<!DOCTYPE html>
+{% load static %} <!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
     <title>My Movie Reviews</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h1>🎬 나만의 영화 기록장</h1>
-    <div class="sort-buttons">
-        <a href="?sort=recent">최신순</a> | 
-        <a href="?sort=rating">별점순</a> | 
-        <a href="?sort=running_time">러닝타임순</a>
-    </div>
+    <header class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'reviews:review_list' %}" class="logo">
+                🍿 My Movie Reviews
+            </a>
+        </div>
+    </header>
 
-    <hr>
-    <a href="{% url 'reviews:review_create' %}">[리뷰 작성하기]</a> <hr>
-    
-    <div class="review-container">
-        {% for review in reviews %}
-            <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
-                <h3>
-                    <a href="{% url 'reviews:review_detail' review.pk %}">{{ review.title }}</a>
-                </h3>
-                <p>개봉년도: {{ review.release_year }}</p>
-                <p>장르: {{ review.genre }}</p>
-                <p>별점: ⭐ {{ review.rating }}</p>
+    <div class="container">
+        <div class="toolbar">
+            <div class="sort-buttons">
+                <a href="?sort=recent">최신순</a> | 
+                <a href="?sort=rating">별점순</a> | 
+                <a href="?sort=running_time">러닝타임순</a>
             </div>
-        {% endfor %}
+
+            <div>
+                <a href="{% url 'reviews:review_create' %}" class="btn">✨ 새 리뷰 작성</a>
+            </div>
+        </div>
+
+        <div class="review-grid">
+            {% for review in reviews %}
+                <div class="review-card">
+                    <h3><a href="{% url 'reviews:review_detail' review.pk %}">{{ review.title }}</a></h3>
+                    <p>{{ review.release_year }} | {{ review.get_genre_display }}</p> <p class="rating">★ {{ review.rating }}</p>
+                    <p>⏳ {{ review.running_time_display }}</p>
+                </div>
+            {% endfor %}
+        </div>
     </div>
 </body>
 </html>
