@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>My Movie Reviews</title>
+</head>
+<body>
+    <h1>🎬 나만의 영화 기록장</h1>
+    <a href="{% url 'reviews:review_create' %}">[리뷰 작성하기]</a> <hr>
+    
+    <div class="review-container">
+        {% for review in reviews %}
+            <div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">
+                <h3>
+                    <a href="{% url 'reviews:review_detail' review.pk %}">{{ review.title }}</a>
+                </h3>
+                <p>개봉년도: {{ review.release_year }}</p>
+                <p>장르: {{ review.genre }}</p>
+                <p>별점: ⭐ {{ review.rating }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</body>
+</html>

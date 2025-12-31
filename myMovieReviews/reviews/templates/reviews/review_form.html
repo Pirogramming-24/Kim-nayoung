@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>리뷰 작성</title>
+</head>
+<body>
+    {% if review %}
+        <h1>✍️ 리뷰 수정하기</h1>
+    {% else %}
+        <h1>✍️ 새 리뷰 작성</h1>
+    {% endif %}
+    
+    <form action="" method="POST">
+        {% csrf_token %}
+        
+        <table>
+            {{ form.as_p }}
+        </table>
+        
+        <button type="submit">저장하기</button>
+        <a href="{% url 'reviews:review_list' %}">[취소]</a>
+    </form>
+</body>
+</html>
