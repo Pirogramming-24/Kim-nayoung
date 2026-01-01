@@ -1,0 +1,37 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+    <div style="background: white; padding: 30px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 30px;">
+        <h1 style="margin-top: 0;">{{ devtool.name }}</h1>
+        <p style="color: #666;">종류: {{ devtool.kind }}</p>
+        <hr>
+        <div style="min-height: 100px;">{{ devtool.content }}</div>
+        
+        <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+            <a href="{% url 'server:devtool_list' %}" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px;">목록</a>
+            <a href="{% url 'server:devtool_update' devtool.pk %}" style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">수정</a>
+            <form action="{% url 'server:devtool_delete' devtool.pk %}" method="post">
+                {% csrf_token %}
+                <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">삭제</button>
+            </form>
+        </div>
+    </div>
+
+    <h3>💡 이 개발툴을 활용한 아이디어</h3>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+        {% for idea in related_ideas %}
+        <div style="background: white; border: 1px solid #ddd; border-radius: 10px; padding: 15px;">
+            {% if idea.image %}
+                <img src="{{ idea.image.url }}" style="width: 100%; height: 100px; object-fit: cover; border-radius: 5px;">
+            {% endif %}
+            <h4 style="margin: 10px 0;">
+                <a href="{% url 'server:idea_detail' idea.pk %}" style="text-decoration: none; color: #333;">{{ idea.title }}</a>
+            </h4>
+        </div>
+        {% empty %}
+        <p style="color: #888;">아직 이 툴을 사용한 아이디어가 없습니다.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

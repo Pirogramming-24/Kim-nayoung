@@ -1,0 +1,19 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h2>🔄 아이디어 수정</h2>
+    <hr>
+    
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+
+        <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            수정 완료
+        </button>
+        <a href="{% url 'server:idea_detail' idea.pk %}" style="margin-left: 10px; text-decoration: none; color: #666;">취소</a>
+    </form>
+</div>
+{% endblock %}

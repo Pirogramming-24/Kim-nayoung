@@ -1,0 +1,16 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h2>{% if devtool %}🛠 개발툴 수정{% else %}🛠 새 개발툴 등록{% endif %}</h2>
+    <hr>
+    
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <button type="submit" style="background: #007bff; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">저장하기</button>
+        <a href="{% url 'server:devtool_list' %}" style="margin-left: 10px; text-decoration: none; color: #666;">취소</a>
+    </form>
+</div>
+{% endblock %}

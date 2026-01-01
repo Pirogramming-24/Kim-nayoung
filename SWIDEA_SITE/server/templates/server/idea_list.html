@@ -1,0 +1,147 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+    <h1>📌 아이디어 리스트</h1>
+    
+    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+        <div style="font-size: 0.9rem; color: #666;">
+            <span style="font-weight: bold; margin-right: 5px;">정렬:</span>
+            
+            <a href="?sort=stars" style="color: {% if sort == 'stars' %}black{% else %}#888{% endif %}; font-weight: {% if sort == 'stars' %}bold{% else %}normal{% endif %}; text-decoration: none;">찜하기순</a> | 
+            
+            <a href="?sort=name" style="color: {% if sort == 'name' %}black{% else %}#888{% endif %}; font-weight: {% if sort == 'name' %}bold{% else %}normal{% endif %}; text-decoration: none;">이름순</a> | 
+            
+            <a href="?sort=old" style="color: {% if sort == 'old' %}black{% else %}#888{% endif %}; font-weight: {% if sort == 'old' %}bold{% else %}normal{% endif %}; text-decoration: none;">등록순</a> | 
+            
+            <a href="?sort=recent" style="color: {% if sort == 'recent' %}black{% else %}#888{% endif %}; font-weight: {% if sort == 'recent' %}bold{% else %}normal{% endif %}; text-decoration: none;">최신순</a>
+        </div>
+        <a href="{% url 'server:idea_create' %}" style="background: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
+            + 아이디어 등록
+        </a>
+    </div>
+    
+    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px;">
+        {% for idea in ideas %}
+        <div style="background: white; border: 1px solid #ddd; border-radius: 10px; overflow: hidden; position: relative;">
+            
+            <div style="position: relative;">
+                {% if idea.image %}
+                    <img src="{{ idea.image.url }}" alt="{{ idea.title }}" style="width: 100%; height: 150px; object-fit: cover;">
+                {% else %}
+                    <div style="width: 100%; height: 150px; background: #eee;"></div>
+                {% endif %}
+
+                <button class="star-btn" data-id="{{ idea.pk }}" style="position: absolute; top: 10px; right: 10px; background: none; border: none; font-size: 1.5rem; cursor: pointer; padding: 0; text-shadow: 0 0 5px rgba(0,0,0,0.5);">
+                    {% if idea.star_count > 0 %}
+                        <span>★</span>
+                    {% else %}
+                        <span>☆</span>
+                    {% endif %}
+                </button>
+            </div>
+            
+            <div style="padding: 15px;">
+                <h3 style="margin: 0 0 10px 0;">
+                    <a href="{% url 'server:idea_detail' idea.pk %}" style="text-decoration: none; color: #333;">{{ idea.title }}</a>
+                </h3>
+                <p style="margin: 0; color: #666; font-size: 0.9rem;">개발툴: {{ idea.devtool.name }}</p>
+                <hr style="margin: 10px 0; border: 0; border-top: 1px solid #eee;">
+                <div style="display: flex; align-items: center; gap: 5px;">
+                    <span>관심도</span>
+                    <button class="interest-btn" data-id="{{ idea.pk }}" data-action="dec" style="border: 1px solid #ccc; background: white; cursor: pointer;">-</button>
+                    
+                    <span id="interest-{{ idea.pk }}">{{ idea.interest }}</span>
+                    
+                    <button class="interest-btn" data-id="{{ idea.pk }}" data-action="inc" style="border: 1px solid #ccc; background: white; cursor: pointer;">+</button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>등록된 아이디어가 없습니다.</p>
+        {% endfor %}
+    </div>
+
+    <div style="text-align: center; margin-top: 30px;">
+        <div style="display: inline-block;">
+            
+            {% if ideas.has_previous %}
+                <a href="?page={{ ideas.previous_page_number }}&sort={{ sort }}" style="padding: 5px 10px; border: 1px solid #ddd; color: #333; text-decoration: none; margin-right: 5px;">&laquo; 이전</a>
+            {% endif %}
+
+            {% for num in ideas.paginator.page_range %}
+                {% if ideas.number == num %}
+                    <span style="padding: 5px 10px; border: 1px solid #333; background-color: #333; color: white; margin-right: 5px;">{{ num }}</span>
+                {% else %}
+                    <a href="?page={{ num }}&sort={{ sort }}" style="padding: 5px 10px; border: 1px solid #ddd; color: #333; text-decoration: none; margin-right: 5px;">{{ num }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if ideas.has_next %}
+                <a href="?page={{ ideas.next_page_number }}&sort={{ sort }}" style="padding: 5px 10px; border: 1px solid #ddd; color: #333; text-decoration: none;">다음 &raquo;</a>
+            {% endif %}
+            
+        </div>
+    </div>
+
+    <script>
+        const starBtns = document.querySelectorAll('.star-btn');
+
+        starBtns.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const ideaId = btn.getAttribute('data-id');
+                
+                try {
+                    const response = await fetch(`/star/${ideaId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        if (data.is_starred) {
+                            btn.innerHTML = '<span>★</span>';
+                        } else {
+                            btn.innerHTML = '<span>☆</span>';
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert("오류가 발생했습니다.");
+                }
+            });
+        });
+        const interestBtns = document.querySelectorAll('.interest-btn');
+
+        interestBtns.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const ideaId = btn.getAttribute('data-id');
+                const action = btn.getAttribute('data-action'); // 'inc' 또는 'dec'
+                
+                try {
+                    const response = await fetch(`/interest/${ideaId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': '{{ csrf_token }}',
+                            'Content-Type': 'application/json',
+                        },
+                        // 서버로 '올릴지 내릴지' 정보를 보냄
+                        body: JSON.stringify({ action: action })
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        // 서버가 알려준 새 숫자로 화면 업데이트
+                        const interestSpan = document.getElementById(`interest-${ideaId}`);
+                        interestSpan.innerText = data.interest;
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert("오류가 발생했습니다.");
+                }
+            });
+        });
+    </script>
+{% endblock %}

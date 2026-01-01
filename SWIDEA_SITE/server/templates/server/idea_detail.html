@@ -1,0 +1,36 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+<div class="container" style="max-width: 800px;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h1>{{ idea.title }}</h1>
+        <span style="font-size: 1.2rem; font-weight: bold; color: #ffc107;">
+            ⭐️ 관심도: {{ idea.interest }}
+        </span>
+    </div>
+
+    {% if idea.image %}
+        <div style="margin-bottom: 30px;">
+            <img src="{{ idea.image.url }}" alt="{{ idea.title }}" style="width: 100%; max-height: 500px; object-fit: contain; border: 1px solid #ddd; border-radius: 10px;">
+        </div>
+    {% endif %}
+
+    <div style="background: white; padding: 20px; border-radius: 10px; border: 1px solid #ddd; margin-bottom: 20px;">
+        <p><strong>개발툴:</strong> {{ idea.devtool.name }}</p> 
+        <p><strong>등록일:</strong> {{ idea.created_at|date:"Y.m.d H:i" }}</p>
+        <hr>
+        <div style="min-height: 100px; white-space: pre-wrap;">{{ idea.content }}</div>
+    </div>
+
+    <div style="display: flex; gap: 10px; justify-content: flex-end;">
+        <a href="{% url 'server:main' %}" style="padding: 10px 20px; background: #6c757d; color: white; text-decoration: none; border-radius: 5px;">목록</a>
+        
+        <a href="{% url 'server:idea_update' idea.pk %}" style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">수정</a>
+        
+        <form action="{% url 'server:idea_delete' idea.pk %}" method="post">
+            {% csrf_token %}
+            <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');" style="padding: 10px 20px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">삭제</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
