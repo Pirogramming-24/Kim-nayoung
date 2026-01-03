@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SWIDEA</title>
+    <style>
+        body { margin: 0; padding: 0; font-family: sans-serif; background-color: #f4f4f4; }
+        .navbar { background-color: #333; overflow: hidden; padding: 10px 20px; display: flex; align-items: center; justify-content: space-between;}
+        .navbar a { color: white; text-decoration: none; padding: 10px; }
+        .navbar .logo { font-weight: bold; font-size: 1.2rem; }
+        .navbar .menu a:hover { background-color: #ddd; color: black; border-radius: 5px;}
+        .body { max-width: 1000px; margin: 20px auto; padding: 20px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{% url 'server:main' %}" class="logo">💡 SWIDEA</a>
+        <div class="menu">
+            <a href="{% url 'server:main' %}">아이디어 관리</a>
+            <a href="{% url 'server:devtool_list' %}">개발툴 관리</a></div>
+    </div>
+
+    <div class="body">
+        {% block content %}
+        {% endblock %}
+    </div>
+</body>
+</html>

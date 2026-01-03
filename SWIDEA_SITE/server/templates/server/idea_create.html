@@ -1,0 +1,42 @@
+{% extends 'server/base.html' %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 0 auto;">
+    <h2>💡 새 아이디어 등록</h2>
+    <hr>
+    
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div style="margin-bottom: 15px;">
+            <label>아이디어 명</label>
+            {{ form.title }}
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label>이미지</label>
+            {{ form.image }}
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label>아이디어 설명</label>
+            {{ form.content }}
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label>관심도</label>
+            {{ form.interest }}
+        </div>
+        
+        <div style="margin-bottom: 15px;">
+            <label>개발툴</label>
+            {{ form.devtool }}
+        </div>
+
+        <button type="submit" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            등록하기
+        </button>
+        <a href="{% url 'server:main' %}" style="margin-left: 10px; text-decoration: none; color: #666;">취소</a>
+    </form>
+</div>
+{% endblock %}
