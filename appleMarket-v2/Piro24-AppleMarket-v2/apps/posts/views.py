@@ -1,6 +1,14 @@
+
+import traceback
 from django.shortcuts import render, redirect
 from .models import Post
 from .forms import PostForm
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+import numpy as np
+import cv2
+from .services.ocr_service import OCRService
 
 # Create your views here.
 def main(request):
@@ -64,3 +72,28 @@ def delete(request, pk):
     post = Post.objects.get(id=pk)
     post.delete()
     return redirect('/')
+
+@csrf_exempt
+def ocr_extract(request):
+    if request.method == 'POST' and request.FILES.get('image'):
+        try:
+            image_file = request.FILES['image']
+            
+            file_bytes = np.frombuffer(image_file.read(), np.uint8)
+            decoded_image = cv2.imdecode(file_bytes, cv2.IMREAD_COLOR)
+
+            if decoded_image is None:
+                raise ValueError("이미지 변환 실패: 손상된 파일이거나 지원하지 않는 형식입니다.")
+
+            # 서비스 호출 (변환된 이미지를 넘김)
+            service = OCRService()
+            nutrient_data = service.extract_nutrient_from_image(decoded_image)
+
+            return JsonResponse({'success': True, 'data': nutrient_data})
+        except Exception as e:
+            print("🚨 상세 에러 로그 시작")
+            traceback.print_exc()  # 이게 진짜 에러 위치를 다 보여줍니다.
+            print("🚨 상세 에러 로그 끝")
+            return JsonResponse({'success': False, 'error': str(e)})
+
+    return JsonResponse({'success': False, 'message': 'No image provided'})

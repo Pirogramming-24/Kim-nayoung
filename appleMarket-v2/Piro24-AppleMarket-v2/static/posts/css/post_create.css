@@ -1,0 +1,109 @@
+/* [수정됨] main 태그의 flex 속성 제거 -> 일반적인 블록 구조로 변경 */
+main {
+    width: 100%;
+    min-height: 100vh;
+    padding: 40px 20px; /* 위아래 여백 추가 */
+    background-color: #f8f9fa;
+    box-sizing: border-box;
+}
+
+/* 폼 컨테이너 (카드 스타일) */
+.form-card {
+    background-color: white;
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto; /* [핵심] 좌우 자동 여백으로 중앙 정렬 */
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* 제목 스타일 */
+h2 {
+    text-align: center;
+    color: #333;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+    margin-top: 0; /* 제목 위 여백 제거 */
+}
+
+/* 폼 요소 간격 */
+form p {
+    margin-bottom: 1.2rem;
+}
+
+/* 라벨 스타일 */
+label {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0.5rem;
+}
+
+/* 입력창 공통 스타일 */
+input[type="text"],
+input[type="number"],
+input[type="password"],
+input[type="email"],
+input[type="file"],
+textarea,
+select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #dee2e6;
+    border-radius: 10px;
+    font-size: 1rem;
+    background-color: #fff;
+    box-sizing: border-box;
+    transition: all 0.2s ease-in-out;
+}
+
+/* 입력창 포커스 효과 */
+input:focus, textarea:focus, select:focus {
+    border-color: #28a745;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(40, 167, 69, 0.1);
+}
+
+/* 📸 영양성분 이미지 파일 입력창 강조 */
+#id_nutrition_image {
+    background-color: #f1f8e9;
+    border: 1px dashed #28a745;
+}
+
+/* '분석 중...' 상태 스타일 */
+.analyzing {
+    background-color: #e9ecef !important;
+    color: #007bff !important;
+    font-weight: bold;
+    text-align: center;
+    cursor: wait;
+    border: 1px solid #ced4da !important;
+}
+
+/* 등록하기 버튼 스타일 */
+.btn-success {
+    width: 100%;
+    padding: 14px;
+    background-color: #28a745;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    margin-top: 20px; /* 버튼 위 여백 조금 더 추가 */
+    transition: background-color 0.2s;
+}
+
+.btn-success:hover {
+    background-color: #218838;
+}
+
+/* 텍스트 영역 높이 */
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}

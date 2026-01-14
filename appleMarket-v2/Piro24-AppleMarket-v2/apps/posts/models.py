@@ -13,6 +13,14 @@ class Post(models.Model):
     updated_at = models.DateTimeField('수정일', null=True, blank=True)
     photo = models.ImageField('이미지', blank=True, upload_to='posts/%Y%m%d')
 
+    nutrition_image = models.ImageField('영양성분표', blank=True, upload_to='posts/nutrition/%Y%m%d')
+    
+    # 분석된 데이터 저장
+    calorie = models.FloatField('칼로리(kcal)', default=0)
+    carbohydrate = models.FloatField('탄수화물(g)', default=0)
+    protein = models.FloatField('단백질(g)', default=0)
+    fat = models.FloatField('지방(g)', default=0)
+
     def save(self, *args, **kwargs):
         if self.pk:  # 수정일 때에만 갱신
             self.updated_at = timezone.now()
