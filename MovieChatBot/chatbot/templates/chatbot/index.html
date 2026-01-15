@@ -1,0 +1,126 @@
+{% load static %}
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>🍿 영화 추천 봇</title>
+<link rel="stylesheet" href="{% static 'css/style.css' %}"> <style>
+  /* 챗봇 전용 추가 스타일 */
+  body { background-color: #f4f4f9; display: flex; flex-direction: column; height: 100vh; margin: 0; }
+  .chat-container { flex: 1; max-width: 800px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; background: white; box-shadow: 0 0 20px rgba(0,0,0,0.1); }
+  header { 
+    background: #333; 
+    color: white; 
+    padding: 15px; 
+    /* Flexbox를 사용하여 내용물을 가운데 정렬하고 묶어줍니다 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px; /* 버튼과 제목 사이의 간격 */
+    position: relative;
+  }
+  
+  #chat-box { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+  
+  .message { max-width: 80%; padding: 12px 16px; border-radius: 15px; line-height: 1.5; font-size: 0.95rem; }
+  .message.user { align-self: flex-end; background-color: #007bff; color: white; border-bottom-right-radius: 2px; }
+  .message.bot { align-self: flex-start; background-color: #f1f3f5; color: #333; border-bottom-left-radius: 2px; border: 1px solid #e9ecef; }
+  
+  .input-area { border-top: 1px solid #eee; padding: 20px; background: white; display: flex; gap: 10px; }
+  textarea { flex: 1; height: 50px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; resize: none; }
+  button { width: 80px; background-color: #333; color: white; border: none; border-radius: 8px; cursor: pointer; transition: 0.2s; }
+  button:hover { background-color: #555; }
+  button:disabled { background-color: #ccc; }
+
+  /* 네비게이션 바로가기 (상단에 띄우기) */
+  .nav-link { position: absolute; top: 15px; left: 20px; color: white; text-decoration: none; font-size: 0.9rem; }
+</style>
+</head>
+<body>
+
+  <div class="chat-container">
+    <header>
+      <a href="{% url 'reviews:review_list' %}" class="nav-link">← 목록으로</a>
+      <h3>🎬 AI 무비 챗봇</h3>
+    </header>
+
+    <div id="chat-box">
+      <div class="message bot">
+        안녕하세요! 어떤 영화를 찾으시나요? 장르나 키워드를 말씀해주시면 DB에서 찾아 추천해드릴게요! 😊
+      </div>
+    </div>
+
+    <div class="input-area">
+      <textarea id="question" placeholder="예: 스릴러 영화 추천해줘, 또는 주토피아 줄거리 알려줘"></textarea>
+      <button id="send-btn">전송</button>
+    </div>
+  </div>
+
+<script>
+    const chatBox = document.getElementById('chat-box');
+    const questionInput = document.getElementById('question');
+    const sendBtn = document.getElementById('send-btn');
+
+    function addMessage(text, type) {
+        const div = document.createElement('div');
+        div.className = `message ${type}`;
+        div.innerHTML = text.replace(/\n/g, '<br>');
+        chatBox.appendChild(div);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    async function sendQuestion() {
+        const question = questionInput.value.trim();
+        if (!question) return;
+
+        // 1. 사용자 메시지 추가
+        addMessage(question, 'user');
+        questionInput.value = '';
+        sendBtn.disabled = true;
+
+        // 2. 로딩 표시 (임시)
+        const loadingDiv = document.createElement('div');
+        loadingDiv.className = 'message bot';
+        loadingDiv.innerText = '열심히 찾는 중... 🍿';
+        loadingDiv.id = 'loading';
+        chatBox.appendChild(loadingDiv);
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+        try {
+            const response = await fetch("{% url 'chatbot:api' %}", {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question: question })
+            });
+
+            const data = await response.json();
+            
+            // 로딩 제거
+            document.getElementById('loading').remove();
+
+            if (data.answer) {
+                addMessage(data.answer, 'bot');
+            } else {
+                addMessage("죄송해요, 오류가 발생했어요.", 'bot');
+            }
+
+        } catch (error) {
+            document.getElementById('loading').remove();
+            addMessage("서버 연결에 실패했습니다.", 'bot');
+            console.error(error);
+        } finally {
+            sendBtn.disabled = false;
+        }
+    }
+
+    sendBtn.addEventListener('click', sendQuestion);
+    questionInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendQuestion();
+        }
+    });
+</script>
+</body>
+</html>
