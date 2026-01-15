@@ -4,6 +4,40 @@
     <meta charset="UTF-8">
     <title>My Movie Reviews</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .review-poster { width: 100%; height: 250px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
+        .no-poster { width: 100%; height: 250px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #888; border-radius: 5px; margin-bottom: 10px; }
+        
+        .search-wrapper {
+            padding: 20px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        .search-form {
+            display: flex;
+            justify-content: center;
+            max-width: 800px;
+            margin: 0 auto;
+            gap: 10px;
+            padding: 0 20px;
+        }
+        .search-input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            flex-grow: 1;
+        }
+        .btn-search {
+            padding: 10px 20px;
+            background-color: #333;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+    </style>
 </head>
 <body>
     <header class="navbar">
@@ -14,25 +48,59 @@
         </div>
     </header>
 
+    <div class="search-wrapper">
+        <form action="" method="GET" class="search-form">
+            <input type="hidden" name="source" value="{{ source }}">
+            <input type="hidden" name="sort" value="{{ sort }}">
+            
+            <input type="text" name="q" value="{{ q }}" placeholder="영화 제목, 감독, 배우 검색..." class="search-input">
+            <button type="submit" class="btn-search">검색</button>
+        </form>
+    </div>
     <div class="container">
         <div class="toolbar">
-            <div class="sort-buttons">
-                <a href="?sort=recent">최신순</a> | 
-                <a href="?sort=rating">별점순</a> | 
-                <a href="?sort=running_time">러닝타임순</a>
+            <div class="filter-buttons" style="margin-right: 20px;">
+                <a href="?source=all&sort={{ sort }}&q={{ q }}" class="btn {% if source == 'all' %}btn-primary{% else %}btn-secondary{% endif %}">
+                    📂 전체
+                </a>
+                <a href="?source=manual&sort={{ sort }}&q={{ q }}" class="btn {% if source == 'manual' %}btn-primary{% else %}btn-secondary{% endif %}">
+                    ✍️ 직접 쓴 리뷰
+                </a>
+                <a href="?source=tmdb&sort={{ sort }}&q={{ q }}" class="btn {% if source == 'tmdb' %}btn-primary{% else %}btn-secondary{% endif %}">
+                    🎬 TMDB
+                </a>
             </div>
 
-            <div>
+            <div class="sort-buttons">
+                <a href="?sort=recent&source={{ source }}&q={{ q }}" {% if sort == 'recent' %}class="active"{% endif %}>최신순</a> | 
+                <a href="?sort=rating&source={{ source }}&q={{ q }}" {% if sort == 'rating' %}class="active"{% endif %}>별점순</a> | 
+                <a href="?sort=running_time&source={{ source }}&q={{ q }}" {% if sort == 'running_time' %}class="active"{% endif %}>러닝타임순</a>
+            </div>
+
+            <div style="margin-left: auto;">
                 <a href="{% url 'reviews:review_create' %}" class="btn">✨ 새 리뷰 작성</a>
             </div>
         </div>
 
+        {% if not reviews %}
+            <div style="text-align: center; margin-top: 50px; color: #888;">
+                <p>검색 결과가 없습니다.</p>
+            </div>
+        {% endif %}
+
         <div class="review-grid">
             {% for review in reviews %}
                 <div class="review-card">
+                    <a href="{% url 'reviews:review_detail' review.pk %}">
+                        {% if review.poster %}
+                            <img src="{{ review.poster.url }}" alt="{{ review.title }}" class="review-poster">
+                        {% else %}
+                            <div class="no-poster">No Image</div>
+                        {% endif %}
+                    </a>
                     <h3><a href="{% url 'reviews:review_detail' review.pk %}">{{ review.title }}</a></h3>
-                    <p>{{ review.release_year }} | {{ review.get_genre_display }}</p> <p class="rating">★ {{ review.rating }}</p>
-                    <p>⏳ {{ review.running_time_display }}</p>
+                    <p>{{ review.release_year }} | {{ review.get_genre_display }}</p> 
+                    <p class="rating">★ {{ review.rating }}</p>
                 </div>
             {% endfor %}
         </div>

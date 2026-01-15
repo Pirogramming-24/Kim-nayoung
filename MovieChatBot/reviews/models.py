@@ -18,6 +18,8 @@ class Review(models.Model):
     rating = models.DecimalField(max_digits=2, decimal_places=1)
     running_time = models.IntegerField()
     content = models.TextField()
+    poster = models.ImageField(upload_to='posters/', null=True, blank=True)
+    is_tmdb = models.BooleanField(default=False)
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

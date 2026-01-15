@@ -9,4 +9,5 @@ urlpatterns = [
     path('create/', views.review_create, name='review_create'),
     path('<int:pk>/update/', views.review_update, name='review_update'),
     path('<int:pk>/delete/', views.review_delete, name='review_delete'),
+    # path('tmdb/fetch/', views.tmdb_fetch, name='tmdb_fetch'),
 ]

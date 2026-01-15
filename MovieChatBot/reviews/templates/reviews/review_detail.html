@@ -16,6 +16,11 @@
 
     <div class="container">
         <h1>{{ review.title }}</h1>
+        {% if review.poster %}
+            <img src="{{ review.poster.url }}" alt="영화 포스터" width="300">
+        {% else %}
+            <p>등록된 포스터가 없습니다.</p>
+        {% endif %}
         <div class="detail-info">
             <p><strong>장르:</strong> {{ review.get_genre_display }} / {{ review.release_year }}년</p>
             <p><strong>감독:</strong> {{ review.director }} | <strong>주연:</strong> {{ review.actors }}</p>
