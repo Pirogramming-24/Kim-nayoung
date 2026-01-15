@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'corsheaders',
     'reviews',
     'chatbot',
+    'langchain_chroma',
+    'langchain_upstage',
 ]
 
 MIDDLEWARE = [
@@ -139,5 +141,5 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-OPENAI_API_KEY = os.getenv('OPENAI_API_KEY')
+UPSTAGE_API_KEY = os.getenv('UPSTAGE_API_KEY')
 TMDB_API_KEY = os.getenv('TMDB_API_KEY')
