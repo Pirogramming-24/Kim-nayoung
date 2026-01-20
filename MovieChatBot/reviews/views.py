@@ -5,6 +5,7 @@ from .forms import ReviewForm
 from .models import Review
 from .services import TMDBService
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 def fetch_and_save_tmdb():
     tmdb_service = TMDBService()
@@ -125,9 +126,13 @@ def review_list(request):
         reviews = reviews.order_by('running_time')
     else:
         reviews = reviews.order_by('-pk')
+
+    paginator = Paginator(reviews, 9) 
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     
     context = {
-        'reviews': reviews,
+        'reviews': page_obj,
         'sort': sort,
         'source': source,
         'q': q,

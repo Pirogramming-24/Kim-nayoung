@@ -6,6 +6,13 @@ venv/
 env/
 .env
 
+db.sqlite3
+db.sqlite3-journal
+
+media/
+
+vector_store/
+
 .DS_Store
 .AppleDouble
 .LSOverride

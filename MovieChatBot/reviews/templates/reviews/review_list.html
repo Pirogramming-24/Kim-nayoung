@@ -5,6 +5,28 @@
     <title>My Movie Reviews</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
+        .navbar-content {
+            display: flex;              /* 내부 요소 가로 정렬 */
+            justify-content: space-between; /* 로고는 왼쪽, 버튼은 오른쪽 끝으로 밀기 */
+            align-items: center;        /* 세로 중앙 정렬 */
+            max-width: 850px;          /* 최대 너비 제한 (선택사항) */
+            margin: 0 auto;             /* 중앙 정렬 */
+            padding: 0 20px;            /* 양옆 여백 */
+        }
+
+        .btn-chat {
+            color: white;               /* 폰트 색상: 흰색 */
+            text-decoration: none;      /* 밑줄 제거 */
+            font-weight: bold;          /* 글자 굵게 */
+            padding: 8px 15px;          /* 안쪽 여백 */
+            background-color: #555;     /* 버튼 배경색 (헤더와 구분되게 약간 밝은 회색) */
+            border-radius: 20px;        /* 둥근 모서리 */
+            transition: background 0.3s;
+        }
+
+        .btn-chat:hover {
+            background-color: #777;     /* 마우스 올렸을 때 색상 변경 */
+        }
         .review-poster { width: 100%; height: 250px; object-fit: cover; border-radius: 5px; margin-bottom: 10px; }
         .no-poster { width: 100%; height: 250px; background-color: #f0f0f0; display: flex; align-items: center; justify-content: center; color: #888; border-radius: 5px; margin-bottom: 10px; }
         
@@ -37,6 +59,28 @@
             white-space: nowrap;
             flex-shrink: 0;
         }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 30px;
+            gap: 5px;
+        }
+        .page-link {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            color: #333;
+            text-decoration: none;
+            background-color: white;
+        }
+        .page-link:hover {
+            background-color: #f0f0f0;
+        }
+        .page-link.active {
+            background-color: #333;
+            color: white;
+            border-color: #333;
+        }
     </style>
 </head>
 <body>
@@ -44,6 +88,9 @@
         <div class="navbar-content">
             <a href="{% url 'reviews:review_list' %}" class="logo">
                 🍿 My Movie Reviews
+            </a>
+            <a href="{% url 'chatbot:index' %}" class="btn-chat">
+                🤖 AI 챗봇
             </a>
         </div>
     </header>
@@ -104,6 +151,26 @@
                 </div>
             {% endfor %}
         </div>
-    </div>
+
+        {% if reviews.has_other_pages %}
+        <div class="pagination">
+            {% if reviews.has_previous %}
+                <a href="?page={{ reviews.previous_page_number }}&sort={{ sort }}&source={{ source }}&q={{ q }}" class="page-link">&laquo; 이전</a>
+            {% endif %}
+
+            {% for i in reviews.paginator.page_range %}
+                {% if reviews.number == i %}
+                    <span class="page-link active">{{ i }}</span>
+                {% else %}
+                    <a href="?page={{ i }}&sort={{ sort }}&source={{ source }}&q={{ q }}" class="page-link">{{ i }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if reviews.has_next %}
+                <a href="?page={{ reviews.next_page_number }}&sort={{ sort }}&source={{ source }}&q={{ q }}" class="page-link">다음 &raquo;</a>
+            {% endif %}
+        </div>
+        {% endif %}
+        </div>
 </body>
 </html>

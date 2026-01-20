@@ -1,0 +1,29 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Movie Reviews{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <header class="navbar">
+        <div class="navbar-content">
+            <a href="{% url 'reviews:review_list' %}" class="logo">
+                🍿 My Movie Reviews
+            </a>
+
+            <a href="{% url 'chatbot:index' %}" class="btn-chat">
+                🤖 AI 챗봇에게 물어보기
+            </a>
+        </div>
+    </header>
+
+    <main>
+        {% block content %}
+        {% endblock %}
+    </main>
+
+</body>
+</html>
