@@ -1,0 +1,47 @@
+{% extends 'ai_service/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2 class="mb-3">AI 텍스트 생성 🤖</h2>
+        <p class="text-muted">영어 문장의 시작 부분을 입력하면 뒷내용을 이어 씁니다.</p>
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="user_input" class="form-label">입력 텍스트</label>
+                <textarea class="form-control" id="user_input" name="user_input" rows="4" placeholder="번역할 내용을 입력하세요..." required>{{ user_input }}</textarea>
+            </div>
+            <button type="submit" class="btn btn-primary w-100">실행 (Run)</button>
+        </form>
+
+        {% if result %}
+        <div class="result-box mt-4">
+            <h5>📢 결과:</h5>
+            <p class="fs-5">{{ result }}</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% if user.is_authenticated %}
+    <div class="mt-5">
+        <h4 class="text-secondary border-bottom pb-2">📜 최근 사용 기록 (Latest 5)</h4>
+        {% if history %}
+            <div class="list-group mt-3">
+                {% for item in history %}
+                <div class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <small class="text-muted">{{ item.created_at|date:"Y-m-d H:i" }}</small>
+                    </div>
+                    <p class="mb-1 fw-bold text-primary">Q: {{ item.input_text|truncatechars:30 }}</p>
+                    <small class="text-dark">A: {{ item.output_text|truncatechars:50 }}</small>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <p class="text-muted mt-3">아직 기록이 없습니다.</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+{% endblock %}
