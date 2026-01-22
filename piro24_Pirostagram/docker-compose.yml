@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    # 1. 현재 폴더(.)에 있는 Dockerfile을 기반으로 이미지를 빌드합니다.
+    build: .
+    
+    # 2. 컨테이너 실행 시 이 명령어를 수행합니다.
+    command: python manage.py runserver 0.0.0.0:8000
+    
+    # 3. 내 컴퓨터의 현재 폴더(.)를 컨테이너 내부의 /app 폴더와 동기화합니다.
+    volumes:
+      - .:/app
+      
+    # 4. 포트 연결 (내 컴퓨터 8000 : 컨테이너 8000)
+    ports:
+      - "8000:8000"
