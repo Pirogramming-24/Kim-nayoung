@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import get_user_model
 from .forms import CustomUserCreationForm
+from posts.models import Post
 
 User = get_user_model()
 
@@ -69,3 +70,14 @@ def follow_user(request):
             is_followed = True
             
         return JsonResponse({'is_followed': is_followed})
+    
+def profile(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    # 그 사람의 글만 가져오기
+    user_posts = Post.objects.filter(author=user).order_by('-created_at')
+    
+    context = {
+        'profile_user': user,
+        'user_posts': user_posts,
+    }
+    return render(request, 'users/profile.html', context)

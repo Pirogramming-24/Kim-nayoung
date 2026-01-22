@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Story</title>
+    <style>
+        body { background-color: #222; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        img { max-height: 90vh; max-width: 90vw; border-radius: 10px; }
+        .close-btn { position: absolute; top: 20px; right: 20px; color: white; font-size: 30px; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <a href="{% url 'posts:post_list' %}" class="close-btn">✖</a>
+    <img src="{{ story.image.url }}">
+</body>
+</html>

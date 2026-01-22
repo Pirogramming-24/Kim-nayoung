@@ -19,9 +19,12 @@
             <h1>Pirostagram</h1>
             
             {% if user.is_authenticated %}
-                <div>
-                    <span>{{ user.username }}님</span>
-                    <a href="{% url 'users:logout' %}" style="color: red; margin-left: 10px;">로그아웃</a>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="{% url 'users:profile' user.id %}" style="text-decoration: none; color: black; font-weight: bold; border: 1px solid #dbdbdb; padding: 5px 10px; border-radius: 5px;">
+                        {{ user.username }}님
+                    </a>
+
+                    <a href="{% url 'users:logout' %}" style="color: red; text-decoration: none; font-size: 14px;">로그아웃</a>
                 </div>
             {% else %}
                 <a href="{% url 'users:login' %}">로그인</a>
@@ -46,13 +49,15 @@
 
             {% for story in stories %}
                 <div style="text-align: center;">
-                    <div style="width: 60px; height: 60px; border-radius: 50%; padding: 2px; border: 2px solid #e1306c;">
-                        {% if story.author.profile_image %}
-                            <img src="{{ story.author.profile_image.url }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
-                        {% else %}
-                            <div style="width: 100%; height: 100%; border-radius: 50%; background: gray;"></div>
-                        {% endif %}
-                    </div>
+                    <a href="{% url 'posts:story_view' story.id %}">
+                        <div style="width: 60px; height: 60px; border-radius: 50%; padding: 2px; border: 2px solid #e1306c;">
+                            {% if story.author.profile_image %}
+                                <img src="{{ story.author.profile_image.url }}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                            {% else %}
+                                <div style="width: 100%; height: 100%; border-radius: 50%; background: gray;"></div>
+                            {% endif %}
+                        </div>
+                    </a>
                     <span style="font-size: 12px;">{{ story.author.username }}</span>
                 </div>
             {% endfor %}
@@ -60,8 +65,22 @@
         
         {% for post in posts %}
             <div class="card">
-                <div class="card-header">
-                    {{ post.author.username }}
+                <div class="card-header" style="display: flex; justify-content: space-between;">
+                    <span>
+                        {% if post.author.profile_image %}
+                            <img src="{{ post.author.profile_image.url }}" style="width: 20px; height: 20px; border-radius: 50%; vertical-align: middle;">
+                        {% endif %}
+                        <a href="{% url 'users:profile' post.author.id %}" style="text-decoration: none; color: black; font-weight: bold;">
+                            {{ post.author.username }}
+                        </a>
+                    </span>
+                    
+                    {% if post.author == request.user %}
+                        <div>
+                            <a href="{% url 'posts:post_update' post.id %}" style="text-decoration: none; color: gray; font-size: 12px; margin-right: 5px;">수정</a>
+                            <a href="{% url 'posts:post_delete' post.id %}" onclick="return confirm('정말 삭제하시겠습니까?')" style="text-decoration: none; color: red; font-size: 12px;">삭제</a>
+                        </div>
+                    {% endif %}
                 </div>
                 
                 <div class="card-img">
@@ -82,10 +101,27 @@
                     <hr>
                     <div class="comments-list" id="comments-{{ post.id }}">
                         {% for comment in post.comments.all %}
-                            <p>
-                                <strong>{{ comment.author.username }}</strong> 
-                                {{ comment.content }}
-                            </p>
+                            <div id="comment-{{ comment.id }}" style="margin-bottom: 5px;">
+                                
+                                <div id="comment-display-{{ comment.id }}">
+                                    <strong>{{ comment.author.username }}</strong> 
+                                    <span id="comment-content-{{ comment.id }}">{{ comment.content }}</span>
+                                    
+                                    {% if comment.author == request.user %}
+                                        <small>
+                                            <button onclick="toggleCommentEdit({{ comment.id }})" style="border: none; background: none; color: gray; cursor: pointer; font-size: 11px;">수정</button>
+                                            <button onclick="deleteComment({{ comment.id }})" style="border: none; background: none; color: red; cursor: pointer; font-size: 11px;">X</button>
+                                        </small>
+                                    {% endif %}
+                                </div>
+
+                                <div id="comment-edit-form-{{ comment.id }}" style="display: none;">
+                                    <input type="text" id="edit-input-{{ comment.id }}" value="{{ comment.content }}" style="width: 70%;">
+                                    <button onclick="updateComment({{ comment.id }})" style="font-size: 11px;">저장</button>
+                                    <button onclick="toggleCommentEdit({{ comment.id }})" style="font-size: 11px;">취소</button>
+                                </div>
+
+                            </div>
                         {% endfor %}
                     </div>
 
@@ -166,6 +202,68 @@
                     
                     // 5. 입력창 비우기
                     inputField.value = '';
+                })
+                .catch(error => console.error('Error:', error));
+            }
+
+            // 1. 댓글 삭제 함수
+            const deleteComment = (commentId) => {
+                if (!confirm("댓글을 삭제하시겠습니까?")) return;
+
+                // 수정됨: 경로에서 '/posts' 제거
+                fetch('/comment/delete/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ comment_id: commentId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'success') {
+                        document.getElementById(`comment-${commentId}`).remove();
+                    } else {
+                        alert("삭제 실패: 권한이 없거나 오류가 발생했습니다.");
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+
+            // 2. 수정 모드 토글 (글자 <-> 입력창)
+            const toggleCommentEdit = (commentId) => {
+                const displayDiv = document.getElementById(`comment-display-${commentId}`);
+                const editDiv = document.getElementById(`comment-edit-form-${commentId}`);
+                
+                if (editDiv.style.display === 'none') {
+                    editDiv.style.display = 'block';
+                    displayDiv.style.display = 'none';
+                } else {
+                    editDiv.style.display = 'none';
+                    displayDiv.style.display = 'block';
+                }
+            }
+
+            // 3. 댓글 수정 저장
+            const updateComment = (commentId) => {
+                const inputVal = document.getElementById(`edit-input-${commentId}`).value;
+
+                // 수정됨: 경로에서 '/posts' 제거
+                fetch('/comment/update/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        comment_id: commentId,
+                        content: inputVal
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === 'success') {
+                        // 1. 화면의 텍스트 업데이트
+                        document.getElementById(`comment-content-${commentId}`).innerText = data.content;
+                        // 2. 입력창 닫고 원래대로 복귀
+                        toggleCommentEdit(commentId);
+                    } else {
+                        alert("수정 실패: 본인 댓글이 아니거나 오류가 발생했습니다.");
+                    }
                 })
                 .catch(error => console.error('Error:', error));
             }

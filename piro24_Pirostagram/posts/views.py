@@ -1,6 +1,6 @@
 from django.utils import timezone
 from datetime import timedelta
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Post, Comment, Story
 import json
 from django.http import JsonResponse
@@ -31,6 +31,35 @@ def post_list(request):
         'stories': stories,
     }
     return render(request, 'posts/post_list.html', context)
+
+# 게시글 수정
+@login_required
+def post_update(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    
+    # 작성자 체크 (본인이 아니면 튕겨냄)
+    if post.author != request.user:
+        return redirect('posts:post_list')
+
+    if request.method == 'POST':
+        form = PostForm(request.POST, request.FILES, instance=post) # instance=post 필수
+        if form.is_valid():
+            form.save()
+            return redirect('posts:post_list')
+    else:
+        form = PostForm(instance=post)
+    
+    return render(request, 'posts/post_form.html', {'form': form})
+
+# 게시글 삭제
+@login_required
+def post_delete(request, post_id):
+    post = get_object_or_404(Post, id=post_id)
+    
+    if post.author == request.user:
+        post.delete()
+        
+    return redirect('posts:post_list')
 
 @login_required
 @csrf_exempt # 지금은 편의상 CSRF 예외 처리 (나중엔 JS에서 토큰 보내는 게 정석)
@@ -83,6 +112,39 @@ def add_comment(request):
         })
     
 @login_required
+@csrf_exempt
+def comment_delete(request):
+    if request.method == 'POST':
+        req = json.loads(request.body)
+        comment_id = req.get('comment_id')
+        
+        comment = get_object_or_404(Comment, id=comment_id)
+        
+        # 댓글 작성자거나, 게시글 작성자면 삭제 가능 권한 부여
+        if comment.author == request.user or comment.post.author == request.user:
+            comment.delete()
+            return JsonResponse({'message': 'success', 'comment_id': comment_id})
+        else:
+            return JsonResponse({'message': 'error'}, status=403)
+        
+@login_required
+@csrf_exempt
+def comment_update(request):
+    if request.method == 'POST':
+        req = json.loads(request.body)
+        comment_id = req.get('comment_id')
+        new_content = req.get('content')
+        
+        comment = get_object_or_404(Comment, id=comment_id)
+        
+        # 댓글 작성자만 수정 가능
+        if comment.author == request.user:
+            comment.content = new_content
+            comment.save()
+            return JsonResponse({'message': 'success', 'content': comment.content})
+        return JsonResponse({'message': 'error'}, status=403)
+    
+@login_required
 def post_create(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES) # 이미지 파일은 request.FILES에 있음 (중요!)
@@ -108,3 +170,7 @@ def story_create(request):
     else:
         form = StoryForm()
     return render(request, 'posts/story_form.html', {'form': form})
+
+def story_view(request, story_id):
+    story = get_object_or_404(Story, id=story_id)
+    return render(request, 'posts/story_view.html', {'story': story})

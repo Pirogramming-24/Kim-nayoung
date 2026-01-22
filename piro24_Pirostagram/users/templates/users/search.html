@@ -32,7 +32,7 @@
                     {% else %}
                         <div class="profile-pic"></div>
                     {% endif %}
-                    <span>{{ user.username }}</span>
+                    <a href="{% url 'users:profile' user.id %}">{{ user.username }}</a>
                 </div>
                 {% if user != request.user %}
                     <button onclick="followUser({{ user.id }})" id="follow-btn-{{ user.id }}" style="background: {% if user in request.user.following.all %}#efefef{% else %}#0095f6{% endif %}; color: {% if user in request.user.following.all %}black{% else %}white{% endif %}; border: 1px solid #dbdbdb;">
