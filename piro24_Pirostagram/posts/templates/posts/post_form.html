@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>새 게시글 작성</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #fafafa; }
+        .form-container { background: white; padding: 40px; border: 1px solid #dbdbdb; width: 300px; text-align: center; }
+        input, textarea { width: 100%; margin-bottom: 15px; box-sizing: border-box; }
+        button { width: 100%; background-color: #0095f6; color: white; border: none; padding: 10px; font-weight: bold; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>새 게시물 만들기</h2>
+        
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            
+            <p>사진 선택</p>
+            {{ form.image }}
+            
+            <p>내용</p>
+            {{ form.content }}
+            
+            <button type="submit">공유하기</button>
+        </form>
+        
+        <p><a href="{% url 'posts:post_list' %}">취소</a></p>
+    </div>
+</body>
+</html>

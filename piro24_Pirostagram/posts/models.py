@@ -28,3 +28,11 @@ class Comment(models.Model):
     
     def __str__(self):
         return self.content
+    
+class Story(models.Model):
+    author = models.ForeignKey('users.User', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='stories/')
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f'{self.author} - {self.created_at}'
