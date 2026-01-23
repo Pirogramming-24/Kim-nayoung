@@ -1,0 +1,15 @@
+{% extends 'ai_service/base.html' %}
+
+{% block content %}
+<div class="text-center py-5">
+    <h1>환영합니다! 👋</h1>
+    <p class="lead">Django와 Hugging Face API를 활용한 AI 서비스입니다.</p>
+    <p>상단 탭을 클릭하여 원하는 기능을 실행해보세요.</p>
+    <hr>
+    <div class="row justify-content-center gap-3">
+        <a href="{% url 'ai_service:translate' %}" class="btn btn-outline-primary col-md-3">🌏 번역 하러가기</a>
+        <a href="{% url 'ai_service:summarize' %}" class="btn btn-outline-success col-md-3">📝 요약 하러가기</a>
+        <a href="{% url 'ai_service:generate' %}" class="btn btn-outline-warning col-md-3">✨ 생성 하러가기</a>
+    </div>
+</div>
+{% endblock %}

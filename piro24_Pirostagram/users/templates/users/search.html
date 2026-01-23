@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>유저 검색</title>
+    <style>
+        body { text-align: center; margin-top: 50px; font-family: sans-serif; }
+        input { padding: 10px; width: 200px; }
+        button { padding: 10px; background: #0095f6; color: white; border: none; cursor: pointer; }
+        .user-card { border: 1px solid #dbdbdb; padding: 10px; margin: 10px auto; width: 300px; display: flex; align-items: center; justify-content: space-between; }
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .profile-pic { width: 40px; height: 40px; border-radius: 50%; background: #eee; }
+    </style>
+</head>
+<body>
+    <h1>🔍 유저 검색</h1>
+    
+    <form method="GET">
+        <input type="text" name="q" placeholder="아이디 입력" value="{{ query|default:'' }}">
+        <button type="submit">검색</button>
+    </form>
+
+    <hr style="width: 50%; margin: 30px auto;">
+
+    {% if query %}
+        <h3>'{{ query }}' 검색 결과</h3>
+        {% for user in results %}
+            <div class="user-card">
+                <div class="user-info">
+                    {% if user.profile_image %}
+                        <img src="{{ user.profile_image.url }}" class="profile-pic">
+                    {% else %}
+                        <div class="profile-pic"></div>
+                    {% endif %}
+                    <a href="{% url 'users:profile' user.id %}">{{ user.username }}</a>
+                </div>
+                {% if user != request.user %}
+                    <button onclick="followUser({{ user.id }})" id="follow-btn-{{ user.id }}" style="background: {% if user in request.user.following.all %}#efefef{% else %}#0095f6{% endif %}; color: {% if user in request.user.following.all %}black{% else %}white{% endif %}; border: 1px solid #dbdbdb;">
+                        {% if user in request.user.following.all %}
+                            팔로잉
+                        {% else %}
+                            팔로우
+                        {% endif %}
+                    </button>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>검색 결과가 없습니다.</p>
+        {% endfor %}
+    {% endif %}
+    
+    <p><a href="{% url 'posts:post_list' %}">메인으로 돌아가기</a></p>
+
+    <script>
+        const followUser = (userId) => {
+            const url = '/users/follow/';
+            
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const btn = document.getElementById(`follow-btn-${userId}`);
+                
+                // 팔로우 상태에 따라 버튼 스타일과 텍스트 변경
+                if (data.is_followed) {
+                    btn.innerText = '팔로잉';
+                    btn.style.backgroundColor = '#efefef';
+                    btn.style.color = 'black';
+                } else {
+                    btn.innerText = '팔로우';
+                    btn.style.backgroundColor = '#0095f6';
+                    btn.style.color = 'white';
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+</body>
+</html>

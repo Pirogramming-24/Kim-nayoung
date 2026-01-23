@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입 - Pirostagram</title>
+    <style>
+        body { background-color: #fafafa; display: flex; justify-content: center; align-items: center; min-height: 100vh; flex-direction: column; }
+        .box { background: white; border: 1px solid #dbdbdb; padding: 40px; width: 350px; text-align: center; margin-bottom: 10px; }
+        input { width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #dbdbdb; border-radius: 3px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background-color: #0095f6; color: white; border: none; font-weight: bold; cursor: pointer; border-radius: 3px; }
+        p { font-size: 12px; color: gray; text-align: left; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>Pirostagram</h1>
+        <h3>친구들의 사진과 동영상을 보려면 가입하세요.</h3>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">가입</button>
+        </form>
+    </div>
+    <div class="box">
+        계정이 있으신가요? <a href="{% url 'users:login' %}" style="color: #0095f6; text-decoration: none;">로그인</a>
+    </div>
+</body>
+</html>

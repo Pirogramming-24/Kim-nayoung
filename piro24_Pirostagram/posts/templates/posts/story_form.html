@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>스토리 올리기</title>
+</head>
+<body>
+    <h1>스토리 업로드</h1>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">올리기</button>
+    </form>
+</body>
+</html>
